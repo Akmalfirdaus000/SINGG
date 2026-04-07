@@ -1,0 +1,174 @@
+ 🎯 Flow Login yang Lebih Menarik
+                                                                                                        
+  1. Pre-Login Experience                                   
+
+  ┌─────────────────────────────────────────────────┐
+  │  🏛️   PORTAL PELAYANAN NEGARI                   │
+  │                                                 │
+  │  [Login] [Register]                             │
+  │                                                 │                                                   
+  │               │
+  │  • Pantau pengaduan via tiket                  │                                                    
+  │  • Berita & pengumuman negeri                  │        
+  │  • Statistik transparansi                      │
+  │  • Cek status layanan                          │
+  └─────────────────────────────────────────────────┘
+
+  ---
+  🔐 Flow Login Detail
+
+  1. Halaman Login
+     ↓
+  2. Input Email/NIK
+     ↓
+  3. Pilih Metode Auth:
+     ┌──────────────────────────┐                                                                       
+     │ 🔑 Password biasa        │
+     │ 📱 OTP ke WhatsApp        │                                                                      
+     │ 🔐 Magic Link (Email)     │                          
+     └──────────────────────────┘
+     ↓
+  4. (Jika baru) Onboarding Wizard:
+     ┌──────────────────────────┐
+     │ Selamat datang! 🎉       │
+     │                         │
+     │ [1] Lengkapi profil      │
+     │ [2] Verifikasi NIK       │
+     │ [3] Atur preferensi      │
+     │ [4] Tour singkat app     │                                                                       
+     └──────────────────────────┘
+     ↓                                                                                                  
+  5. Masuk ke Dashboard                                     
+
+  ---
+  🏠 Dashboard yang Kaya & Personal
+
+  Setelah login, user tidak langsung dibawa ke menu kaku, tapi ke dashboard personal yang informatif:
+
+  ┌─────────────────────────────────────────────────────────┐
+  │  Halo, Budi Santoso! 👋                                 │
+  │  🔔 3 notifikasi baru |  📧 2 pesan belum dibaca        │
+  ├─────────────────────────────────────────────────────────┤
+  │                                                         │                                           
+  │  📊 RINGKASAN AKTIVITAS ANDA                            │
+  │  ┌─────────────┬─────────────┬─────────────────────┐   │                                            
+  │  │ 2 Pengaduan │ 1 Dokumen   │ ⭐ Rating: 4.8/5    │   │
+  │  │ Aktif       │ Diproses    │ (12 ulasan)         │   │
+  │  └─────────────┴─────────────┴─────────────────────┘   │
+  │                                                         │
+  │  ⚡ AKSI CEPAT                                          │                                           
+  │  [📸 Laporkan Masalah] [📄 Ajukan Dokumen] [💬 Chat Admin] │
+  │                                                         │                                           
+  │  📋 PENGADUAN TERAKHIR                                  │
+  │  ┌───────────────────────────────────────────────────┐ │
+  │  │ #PGD-2024-001 | Jalan berlubang di Jl. Merdeka   │ │
+  │  │ Status: 👮 Sedang Diproses | Progress: 60%        │ │
+  │  │ [▓▓▓▓▓▓░░░░] Lihat Detail →                       │ │
+  │  └───────────────────────────────────────────────────┘ │                                            
+  │                                                         │
+  │  📄 DOKUMEN ANDA                                        │                                           
+  │  ┌───────────────────────────────────────────────────┐ │
+  │  │ #ADM-2024-045 | Surat Keterangan Domisili         │ │
+  │  │ Status: ✅ Siap Diambil | Estimasi: 2 hari        │ │
+  │  │ [Download PDF] [Lihat Detail]                     │ │
+  │  └───────────────────────────────────────────────────┘ │
+  │                                                         │                                           
+  │  📰 BERITA & PENGUMUMAN TERBARU                         │
+  │  • 🚧 Pekerjaan perbaikan jalan dimulai 15 April       │                                            
+  │  • 📢 Jadwal pelayanan keliling bulan ini             │ 
+  │  • ⚡ Sistem maintenance 20 April pukul 02:00         │
+  │                         │
+  └─────────────────────────────────────────────────────────┘                                           
+                                                            
+  ---
+  📱 Menu Lengkap di Sidebar
+
+  ┌──────────────────────────┐
+  │  👤 Profil                │
+  │  ├─ ini gunakan saja defaul laravel inertia yang di bagian setting│
+  │  └─    │
+  ├──────────────────────────┤
+  │  📋 Pengaduan            │
+  │  ├─ Buat pengaduan baru  │                                                                          
+  │  ├─ Daftar pengaduan     │
+  │  ├─ Draft (3)            │                                                                          
+  │  └─ Pengaduan selesai    │                              
+  ├──────────────────────────┤
+  │  📄 Layanan Administrasi │
+  │  ├─ Ajukan permohonan    │
+  │  ├─ Lacak permohonan     │
+  │  ├─ Dokumen saya         │
+  │  └─ Riwayat dokumen      │
+  ├──────────────────────────┤
+  │  💬 Pesan & Diskusi      │                                                                          
+  │  ├─ Inbox (5 baru)       │
+  │  ├─ Terkirim   
+  └─ Hubungi admin               │                                                                          
+               │                              
+  ├──────────────────────────┤
+  │ 
+                                                                          
+  │  📖 Bantuan              │                              
+  │  ├─ FAQ                  │
+  │  
+  │     │
+              │                                                                          
+  └──────────────────────────┘
+                                                                                                        
+  ---
+  📊 Detail Page Pengaduan yang Interaktif
+                                                                                                        
+  Bukan cuma status statis, tapi:
+                                                                                                        
+  ┌─────────────────────────────────────────────────────┐   
+  │  Pengaduan #PGD-2024-001                             │
+  │  Jalan berlubang di Jl. Merdeka                      │
+  ├─────────────────────────────────────────────────────┤
+  │                                                     │
+  │  👮 Status: Sedang Diproses                         │
+  │  [▓▓▓▓▓▓░░░░] Progress: 60%                         │
+  │  📍 Lokasi: Jl. Merdeka No. 45                      │
+  │  📅 Dilaporkan: 1 April 2026                        │                                               
+  │  ⏱️  Target selesai: 10 April 2026                  │
+  │                                                     │                                               
+  │  📸 FOTO/VIDEO                                      │   
+  │  [🖼️ ] [🖼️ ] [🖼️ ] [+2 lagi]                         │
+  │                                                     │
+  │  📝 TIMELINE PENANGANAN                            │
+  │  ─────────────────────────────────────────────────  │
+  │  ✅ 1 Apr - Pengaduan diterima                     │
+  │     "Terima kasih, sedang kami verifikasi..."      │
+  │                                                     │                                               
+  │  ✅ 2 Apr - Verifikasi lokasi                      │
+  │     Admin: Sudah dicek lokasi, benar ada lubang... │                                                
+  │                                                     │   
+  │  👮 5 Apr - Sedang diperbaiki                      │
+  │     Admin: Tim sudah diturunkan...                 │
+  │     [📸 Update foto lapangan]                      │
+  │                                                     │
+  │  ⏳ Estimasi: 10 Apr - Selesai                     │
+  │                                                     │
+  │  💬 KOMENTAR (3)                                   │
+  │  ┌─────────────────────────────────────────────┐   │                                                
+  │  │ Anda: Kapan diselesaikan?                   │   │
+  │  │ Admin: Minggu ini pak, sudah dijadwalkan... │   │                                                
+  │  └─────────────────────────────────────────────┘   │    
+  │  [Tulis komentar...]                                │
+  │                                                     │
+  │  👍 15 warga mendukung pengaduan ini               │
+  │  🔄 Share ke Facebook | WhatsApp | Twitter         │
+  │                                                     │
+  │  ⭐ Beri Rating (setelah selesai)                  │                                                
+  └─────────────────────────────────────────────────────┘
+ 
+  🔔 Notifikasi yang lebih personal:
+
+  • "Pengaduan Anda sudah 80%, segera selesai!"
+  • "Ada 3 pengaduan serupa di dekat rumah Anda"
+  • "Budi S. membalas komentar Anda di forum"
+  • "Selamat! Anda naik peringkat di leaderboard"
+  • "Dokumen Anda siap diambil, antre no. 5"                                                            
+  • "Event gotong royong minggu ini di rumah Pak RT"
+                                                                                                        
+ 
+ 
