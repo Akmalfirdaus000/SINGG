@@ -11,23 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Drop default Laravel tables if exists
-        Schema::dropIfExists('sessions');
-        Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('users');
-
         // ============================================================
-        // 1. AUTHENTICATION & USER MANAGEMENT
+        // 1. AUTENTIKASI & MANAJEMEN PENGGUNA
         // ============================================================
 
-        // Users table (modified for SINGG system)
+        // Tabel Users (dimodifikasi untuk sistem SINGG)
         Schema::create('users', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('email')->unique()->nullable();
             $table->string('nik', 16)->unique()->nullable();
             $table->string('phone', 20)->nullable();
             $table->string('password_hash')->nullable();
-            $table->enum('auth_method', ['password', 'otp_whatsapp', 'otp_email', 'magic_link', 'google', 'facebook'])->default('password');
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('phone_verified_at')->nullable();
             $table->timestamp('last_login_at')->nullable();
@@ -46,385 +40,433 @@ return new class extends Migration
             $table->index('deleted_at');
         });
 
-        // User profiles
-        Schema::create('user_profiles', function (Blueprint $table) {
+        // Profil Pengguna
+        Schema::create('profil_pengguna', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('user_id')->unique();
-            $table->string('full_name');
-            $table->string('place_of_birth', 100)->nullable();
-            $table->date('date_of_birth')->nullable();
-            $table->string('gender', 10)->nullable();
-            $table->string('occupation', 100)->nullable();
-            $table->string('profile_photo_url', 500)->nullable();
+            $table->string('nama_lengkap');
+            $table->string('tempat_lahir', 100)->nullable();
+            $table->date('tanggal_lahir')->nullable();
+            $table->string('jenis_kelamin', 10)->nullable();
+            $table->string('pekerjaan', 100)->nullable();
+            $table->string('url_foto_profil', 500)->nullable();
             $table->text('bio')->nullable();
-            $table->string('identity_card_url', 500)->nullable();
-            $table->text('address')->nullable();
-            $table->string('province', 100)->nullable();
-            $table->string('city', 100)->nullable();
-            $table->string('district', 100)->nullable();
-            $table->string('village', 100)->nullable();
-            $table->string('postal_code', 10)->nullable();
+            $table->string('url_kartu_identitas', 500)->nullable();
+            $table->text('alamat')->nullable();
+            $table->string('provinsi', 100)->nullable();
+            $table->string('kota', 100)->nullable();
+            $table->string('kecamatan', 100)->nullable();
+            $table->string('desa', 100)->nullable();
+            $table->string('kode_pos', 10)->nullable();
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->index('user_id');
-            $table->index('full_name');
-            $table->index(['city', 'district']);
+            $table->index('nama_lengkap');
+            $table->index(['kota', 'kecamatan']);
         });
 
-        // User roles (many-to-many)
-        Schema::create('user_roles', function (Blueprint $table) {
+        // Peran Pengguna (many-to-many)
+        Schema::create('peran_pengguna', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('user_id');
-            $table->enum('role', ['admin', 'warga']);
+            $table->enum('peran', ['admin', 'warga']);
             $table->uuid('assigned_by')->nullable();
             $table->timestamp('assigned_at')->useCurrent();
             $table->timestamp('expires_at')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->text('notes')->nullable();
+            $table->text('catatan')->nullable();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('assigned_by')->references('id')->on('users')->onDelete('set null');
-            $table->unique(['user_id', 'role']);
+            $table->unique(['user_id', 'peran']);
             $table->index('user_id');
-            $table->index('role');
+            $table->index('peran');
             $table->index('is_active');
         });
 
-        // User preferences
-      
-
 
 
 
 
         // ============================================================
-        // 2. TICKETS / PENGADUAN
+        // 2. PENGADUAN
         // ============================================================
 
-        // Ticket categories (master)
-        Schema::create('ticket_categories', function (Blueprint $table) {
+        // Kategori Pengaduan (master)
+        Schema::create('kategori_pengaduan', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->enum('name', ['infrastruktur', 'kebersihan', 'keamanan', 'kesehatan', 'pendidikan', 'pelayanan_publik', 'administrasi', 'lainnya'])->unique();
-            $table->string('display_name');
-            $table->text('description')->nullable();
+            $table->enum('nama', ['infrastruktur', 'kebersihan', 'keamanan', 'kesehatan', 'pendidikan', 'pelayanan_publik', 'administrasi', 'lainnya'])->unique();
+            $table->string('nama_tampilan');
+            $table->text('deskripsi')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
 
-        // Tickets
-        Schema::create('tickets', function (Blueprint $table) {
+        // Pengaduan
+        Schema::create('pengaduan', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('ticket_number', 50)->unique();
+            $table->string('nomor_pengaduan', 50)->unique();
             $table->uuid('user_id');
-            $table->uuid('category_id');
-            $table->string('title');
-            $table->text('description');
-            $table->enum('status', ['draft', 'pending_verification', 'verified', 'in_progress', 'resolved', 'closed', 'rejected'])->default('pending_verification');
-            $table->enum('priority', ['low', 'medium', 'high', 'urgent'])->default('medium');
-            $table->text('location_address')->nullable();
-            $table->string('location_district', 100)->nullable();
-            $table->string('location_village', 100)->nullable();
+            $table->uuid('kategori_id');
+            $table->string('judul');
+            $table->text('deskripsi');
+            $table->enum('status', ['draft', 'menunggu_verifikasi', 'terverifikasi', 'dalam_proses', 'selesai', 'ditutup', 'ditolak'])->default('menunggu_verifikasi');
+            $table->enum('prioritas', ['rendah', 'sedang', 'tinggi', 'urgent'])->default('sedang');
+            $table->text('alamat_lokasi')->nullable();
+            $table->string('kecamatan_lokasi', 100)->nullable();
+            $table->string('desa_lokasi', 100)->nullable();
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
             $table->uuid('assigned_to')->nullable();
             $table->timestamp('assigned_at')->nullable();
-            $table->timestamp('sla_deadline')->nullable();
-            $table->boolean('sla_breach')->default(false);
-            $table->boolean('sla_breach_notified')->default(false);
-            $table->text('resolution_notes')->nullable();
+            $table->timestamp('batas_waktu')->nullable();
+            $table->boolean('pelanggaran_sla')->default(false);
+            $table->boolean('pelanggaran_sla_diberitahu')->default(false);
+            $table->text('catatan_penyelesaian')->nullable();
             $table->timestamp('resolved_at')->nullable();
             $table->uuid('resolved_by')->nullable();
-            $table->integer('view_count')->default(0);
-            $table->integer('support_count')->default(0);
-            $table->boolean('is_anonymous')->default(false);
-            $table->boolean('is_public')->default(true);
+            $table->integer('jumlah_dilihat')->default(0);
+            $table->boolean('is_anonim')->default(false);
+            $table->boolean('is_publik')->default(true);
+            $table->json('komentar')->nullable();
+            $table->integer('rating')->nullable()->comment('1-5');
+            $table->text('ulasan')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('category_id')->references('id')->on('ticket_categories');
+            $table->foreign('kategori_id')->references('id')->on('kategori_pengaduan');
             $table->foreign('assigned_to')->references('id')->on('users')->onDelete('set null');
             $table->foreign('resolved_by')->references('id')->on('users')->onDelete('set null');
             $table->index('user_id');
-            $table->index('ticket_number');
+            $table->index('nomor_pengaduan');
             $table->index('status');
-            $table->index('category_id');
+            $table->index('kategori_id');
             $table->index('assigned_to');
             $table->index('created_at');
-            $table->index('sla_deadline');
+            $table->index('batas_waktu');
             $table->index(['latitude', 'longitude']);
-            $table->fullText(['title', 'description']);
         });
 
-        // Ticket attachments
-        Schema::create('ticket_attachments', function (Blueprint $table) {
+        // Lampiran Pengaduan
+        Schema::create('lampiran_pengaduan', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('ticket_id');
-            $table->string('file_name');
-            $table->string('file_url', 500);
-            $table->string('file_type');
-            $table->bigInteger('file_size');
-            $table->uuid('uploaded_by');
-            $table->boolean('is_primary')->default(false);
+            $table->uuid('pengaduan_id');
+            $table->string('nama_file');
+            $table->string('url_file', 500);
+            $table->string('tipe_file');
+            $table->bigInteger('ukuran_file');
+            $table->uuid('diunggah_oleh');
+            $table->boolean('is_utama')->default(false);
             $table->timestamp('created_at')->useCurrent();
 
-            $table->foreign('ticket_id')->references('id')->on('tickets')->onDelete('cascade');
-            $table->foreign('uploaded_by')->references('id')->on('users')->onDelete('cascade');
-            $table->index('ticket_id');
-            $table->index('uploaded_by');
+            $table->foreign('pengaduan_id')->references('id')->on('pengaduan')->onDelete('cascade');
+            $table->foreign('diunggah_oleh')->references('id')->on('users')->onDelete('cascade');
+            $table->index('pengaduan_id');
+            $table->index('diunggah_oleh');
         });
 
-      
 
-        // ============================================================
-        // 3. DOCUMENTS / LAYANAN ADMINISTRASI
-        // ============================================================
 
-        // Document types (master)
-        Schema::create('document_types', function (Blueprint $table) {
+        // Riwayat Pengaduan
+        Schema::create('riwayat_pengaduan', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->enum('name', ['surat_pengantar_rt', 'surat_pengantar_rw', 'surat_keterangan_domisili', 'surat_keterangan_usaha', 'surat_pengantar_skck', 'surat_keterangan_tidak_mampu', 'surat_keterangan_belum_menikah', 'surat_keterangan_kematian', 'surat_keterangan_kelahiran', 'surat_pengantar_pembuatan_ktp', 'surat_pengantar_pembuatan_kk', 'lainnya'])->unique();
-            $table->string('display_name');
-            $table->text('description')->nullable();
-            $table->json('requirements')->nullable();
-            $table->decimal('fee', 12, 2)->default(0);
-            $table->integer('processing_days')->default(7);
+            $table->uuid('pengaduan_id');
+            $table->uuid('user_id')->nullable();
+            $table->enum('status_lama', ['draft', 'menunggu_verifikasi', 'terverifikasi', 'dalam_proses', 'selesai', 'ditutup', 'ditolak'])->nullable();
+            $table->enum('status_baru', ['draft', 'menunggu_verifikasi', 'terverifikasi', 'dalam_proses', 'selesai', 'ditutup', 'ditolak']);
+            $table->text('catatan')->nullable();
+            $table->timestamp('created_at')->useCurrent();
+
+            $table->foreign('pengaduan_id')->references('id')->on('pengaduan')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            $table->index('pengaduan_id');
+            $table->index('created_at');
+        });
+
+        // ============================================================
+        // 3. LAYANAN ADMINISTRASI
+        // ============================================================
+
+        // Jenis Dokumen (master)
+        Schema::create('jenis_dokumen', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->enum('nama', ['surat_pengantar_rt', 'surat_pengantar_rw', 'surat_keterangan_domisili', 'surat_keterangan_usaha', 'surat_pengantar_skck', 'surat_keterangan_tidak_mampu', 'surat_keterangan_belum_menikah', 'surat_keterangan_kematian', 'surat_keterangan_kelahiran', 'surat_pengantar_pembuatan_ktp', 'surat_pengantar_pembuatan_kk', 'lainnya'])->unique();
+            $table->string('nama_tampilan');
+            $table->text('deskripsi')->nullable();
+            $table->json('persyaratan')->nullable();
+            $table->decimal('biaya', 12, 2)->default(0);
+            $table->integer('hari_proses')->default(7);
             $table->boolean('is_active')->default(true);
-            $table->boolean('requires_verification')->default(true);
-            $table->integer('sort_order')->default(0);
+            $table->boolean('memerlukan_verifikasi')->default(true);
+            $table->integer('urutan')->default(0);
             $table->timestamps();
         });
 
-        // Document templates
-        Schema::create('document_templates', function (Blueprint $table) {
+        // Template Dokumen
+        Schema::create('template_dokumen', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('document_type_id');
-            $table->string('name');
-            $table->text('template_content');
-            $table->json('variables')->nullable();
+            $table->uuid('jenis_dokumen_id');
+            $table->string('nama');
+            $table->text('isi_template');
+            $table->json('variabel')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->integer('version')->default(1);
+            $table->integer('versi')->default(1);
             $table->timestamps();
 
-            $table->foreign('document_type_id')->references('id')->on('document_types');
+            $table->foreign('jenis_dokumen_id')->references('id')->on('jenis_dokumen')->onDelete('cascade');
         });
 
-        // Documents
-        Schema::create('documents', function (Blueprint $table) {
+        // Dokumen/Permohonan
+        Schema::create('dokumen', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('document_number', 50)->unique();
+            $table->string('nomor_dokumen', 50)->unique();
             $table->uuid('user_id');
-            $table->uuid('document_type_id');
-            $table->enum('status', ['draft', 'pending_verification', 'verified', 'in_review', 'approved', 'rejected', 'completed', 'expired'])->default('pending_verification');
-            $table->string('applicant_name');
-            $table->string('applicant_nik', 16);
-            $table->text('applicant_address');
-            $table->string('applicant_phone', 20)->nullable();
-            $table->json('form_data')->nullable();
+            $table->uuid('jenis_dokumen_id');
+            $table->enum('status', ['draft', 'menunggu_verifikasi', 'terverifikasi', 'dalam_tinjauan', 'disetujui', 'ditolak', 'selesai', 'kedaluwarsa'])->default('menunggu_verifikasi');
+            $table->string('nama_pemohon');
+            $table->string('nik_pemohon', 16);
+            $table->text('alamat_pemohon');
+            $table->string('telepon_pemohon', 20)->nullable();
+            $table->json('data_form')->nullable();
             $table->uuid('assigned_to')->nullable();
             $table->timestamp('assigned_at')->nullable();
             $table->uuid('verified_by')->nullable();
             $table->timestamp('verified_at')->nullable();
-            $table->text('verification_notes')->nullable();
+            $table->text('catatan_verifikasi')->nullable();
             $table->uuid('approved_by')->nullable();
             $table->timestamp('approved_at')->nullable();
-            $table->text('approval_notes')->nullable();
+            $table->text('catatan_persetujuan')->nullable();
             $table->uuid('rejected_by')->nullable();
             $table->timestamp('rejected_at')->nullable();
-            $table->text('rejection_reason')->nullable();
-            $table->string('generated_document_url', 500)->nullable();
+            $table->text('alasan_penolakan')->nullable();
+            $table->string('url_dokumen_dihasilkan', 500)->nullable();
             $table->timestamp('generated_at')->nullable();
-            $table->integer('processing_days')->nullable();
-            $table->timestamp('estimated_completion_date')->nullable();
+            $table->integer('hari_proses')->nullable();
+            $table->timestamp('perkiraan_tanggal_selesai')->nullable();
             $table->timestamp('completed_at')->nullable();
-            $table->boolean('is_paid')->default(false);
-            $table->decimal('payment_amount', 12, 2)->nullable();
-            $table->string('payment_status', 50)->nullable();
-            $table->timestamp('payment_date')->nullable();
-            $table->boolean('is_expedited')->default(false);
+            $table->boolean('is_dibayar')->default(false);
+            $table->decimal('jumlah_pembayaran', 12, 2)->nullable();
+            $table->string('status_pembayaran', 50)->nullable();
+            $table->timestamp('tanggal_pembayaran')->nullable();
+            $table->boolean('is_dipercepat')->default(false);
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('document_type_id')->references('id')->on('document_types');
+            $table->foreign('jenis_dokumen_id')->references('id')->on('jenis_dokumen');
             $table->foreign('assigned_to')->references('id')->on('users')->onDelete('set null');
             $table->foreign('verified_by')->references('id')->on('users')->onDelete('set null');
             $table->foreign('approved_by')->references('id')->on('users')->onDelete('set null');
             $table->foreign('rejected_by')->references('id')->on('users')->onDelete('set null');
             $table->index('user_id');
-            $table->index('document_number');
+            $table->index('nomor_dokumen');
             $table->index('status');
-            $table->index('document_type_id');
+            $table->index('jenis_dokumen_id');
             $table->index('assigned_to');
             $table->index('created_at');
         });
 
-        // Document attachments
-        Schema::create('document_attachments', function (Blueprint $table) {
+        // Lampiran Dokumen
+        Schema::create('lampiran_dokumen', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('document_id');
-            $table->string('file_name');
-            $table->string('file_url', 500);
-            $table->string('file_type');
-            $table->bigInteger('file_size');
-            $table->string('requirement_name', 255)->nullable();
-            $table->uuid('uploaded_by');
-            $table->boolean('is_verified')->default(false);
-            $table->text('verification_notes')->nullable();
+            $table->uuid('dokumen_id');
+            $table->string('nama_file');
+            $table->string('url_file', 500);
+            $table->string('tipe_file');
+            $table->bigInteger('ukuran_file');
+            $table->string('nama_persyaratan', 255)->nullable();
+            $table->uuid('diunggah_oleh');
+            $table->boolean('is_terverifikasi')->default(false);
+            $table->text('catatan_verifikasi')->nullable();
             $table->timestamp('created_at')->useCurrent();
 
-            $table->foreign('document_id')->references('id')->on('documents')->onDelete('cascade');
-            $table->foreign('uploaded_by')->references('id')->on('users')->onDelete('cascade');
-            $table->index('document_id');
-            $table->index('uploaded_by');
+            $table->foreign('dokumen_id')->references('id')->on('dokumen')->onDelete('cascade');
+            $table->foreign('diunggah_oleh')->references('id')->on('users')->onDelete('cascade');
+            $table->index('dokumen_id');
+            $table->index('diunggah_oleh');
         });
 
-        // Document approvals (workflow)
-        Schema::create('document_approvals', function (Blueprint $table) {
+        // Persetujuan Dokumen (workflow)
+        Schema::create('persetujuan_dokumen', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('document_id');
+            $table->uuid('dokumen_id');
             $table->uuid('approver_id');
-            $table->integer('approval_level');
+            $table->integer('tingkat_persetujuan');
             $table->string('status', 50);
-            $table->text('notes')->nullable();
+            $table->text('catatan')->nullable();
             $table->timestamp('approved_at')->nullable();
             $table->timestamp('created_at')->useCurrent();
 
-            $table->foreign('document_id')->references('id')->on('documents')->onDelete('cascade');
+            $table->foreign('dokumen_id')->references('id')->on('dokumen')->onDelete('cascade');
             $table->foreign('approver_id')->references('id')->on('users')->onDelete('cascade');
-            $table->unique(['document_id', 'approval_level']);
-            $table->index('document_id');
+            $table->unique(['dokumen_id', 'tingkat_persetujuan']);
+            $table->index('dokumen_id');
             $table->index('approver_id');
         });
 
-        // Document history
-        Schema::create('document_history', function (Blueprint $table) {
+        // Riwayat Dokumen
+        Schema::create('riwayat_dokumen', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('document_id');
-            $table->uuid('user_id');
-            $table->enum('old_status', ['draft', 'pending_verification', 'verified', 'in_review', 'approved', 'rejected', 'completed', 'expired'])->nullable();
-            $table->enum('new_status', ['draft', 'pending_verification', 'verified', 'in_review', 'approved', 'rejected', 'completed', 'expired']);
-            $table->text('notes')->nullable();
+            $table->uuid('dokumen_id');
+            $table->uuid('user_id')->nullable();
+            $table->enum('status_lama', ['draft', 'menunggu_verifikasi', 'terverifikasi', 'dalam_tinjauan', 'disetujui', 'ditolak', 'selesai', 'kedaluwarsa'])->nullable();
+            $table->enum('status_baru', ['draft', 'menunggu_verifikasi', 'terverifikasi', 'dalam_tinjauan', 'disetujui', 'ditolak', 'selesai', 'kedaluwarsa']);
+            $table->text('catatan')->nullable();
             $table->timestamp('created_at')->useCurrent();
 
-            $table->foreign('document_id')->references('id')->on('documents')->onDelete('cascade');
+            $table->foreign('dokumen_id')->references('id')->on('dokumen')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
-            $table->index('document_id');
+            $table->index('dokumen_id');
             $table->index('created_at');
         });
 
         // ============================================================
-        // 4. NOTIFICATIONS
+        // 4. NOTIFIKASI
         // ============================================================
 
-
-        // Notifications
-        Schema::create('notifications', function (Blueprint $table) {
+        // Notifikasi
+        Schema::create('notifikasi', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('user_id');
-            $table->uuid('template_id')->nullable();
-            $table->enum('type', ['email', 'whatsapp', 'sms', 'push', 'in_app']);
-            $table->json('channels');
+            $table->enum('tipe', ['email', 'whatsapp', 'sms', 'push', 'in_app']);
+            $table->json('saluran');
             $table->string('subject', 500)->nullable();
-            $table->text('content');
+            $table->text('isi');
             $table->json('data')->nullable();
-            $table->enum('email_status', ['pending', 'sent', 'delivered', 'read', 'failed'])->default('pending');
+            $table->enum('status_email', ['pending', 'sent', 'delivered', 'read', 'failed'])->default('pending');
             $table->timestamp('email_sent_at')->nullable();
-            $table->enum('whatsapp_status', ['pending', 'sent', 'delivered', 'read', 'failed'])->default('pending');
+            $table->enum('status_whatsapp', ['pending', 'sent', 'delivered', 'read', 'failed'])->default('pending');
             $table->timestamp('whatsapp_sent_at')->nullable();
-            $table->enum('sms_status', ['pending', 'sent', 'delivered', 'read', 'failed'])->default('pending');
+            $table->enum('status_sms', ['pending', 'sent', 'delivered', 'read', 'failed'])->default('pending');
             $table->timestamp('sms_sent_at')->nullable();
-            $table->enum('push_status', ['pending', 'sent', 'delivered', 'read', 'failed'])->default('pending');
+            $table->enum('status_push', ['pending', 'sent', 'delivered', 'read', 'failed'])->default('pending');
             $table->timestamp('push_sent_at')->nullable();
-            $table->boolean('is_read')->default(false);
+            $table->boolean('is_dibaca')->default(false);
             $table->timestamp('read_at')->nullable();
-            $table->integer('priority')->default(0);
+            $table->integer('prioritas')->default(0);
             $table->timestamp('scheduled_at')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('sent_at')->nullable();
             $table->integer('retry_count')->default(0);
             $table->timestamp('last_retry_at')->nullable();
-            $table->text('error_message')->nullable();
+            $table->text('pesan_error')->nullable();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('template_id')->references('id')->on('notification_templates')->onDelete('set null');
             $table->index('user_id');
-            $table->index('is_read');
+            $table->index('is_dibaca');
             $table->index('created_at');
             $table->index('scheduled_at');
         });
 
         // ============================================================
-        // 5. GAMIFICATION (POINTS & BADGES)
+        // 5. PENGUMUMAN
         // ============================================================
 
-        // Messages
-        Schema::create('messages', function (Blueprint $table) {
+        // Pengumuman
+        Schema::create('pengumuman', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('conversation_id');
-            $table->uuid('sender_id');
-            $table->uuid('receiver_id');
-            $table->text('content');
-            $table->enum('message_status', ['sent', 'delivered', 'read', 'deleted'])->default('sent');
-            $table->string('attachment_url', 500)->nullable();
-            $table->string('attachment_type', 50)->nullable();
-            $table->uuid('reply_to_id')->nullable();
-            $table->boolean('is_read')->default(false);
+            $table->uuid('dibuat_oleh');
+            $table->string('judul');
+            $table->text('isi');
+            $table->string('tipe', 50)->default('umum');
+            $table->enum('target_peran', ['superadmin', 'admin', 'warga'])->nullable();
+            $table->boolean('is_penting')->default(false);
+            $table->boolean('is_semat')->default(false);
+            $table->timestamp('published_at')->useCurrent();
+            $table->timestamp('kadaluarsa_at')->nullable();
+            $table->integer('jumlah_dilihat')->default(0);
+            $table->integer('jumlah_dibaca')->default(0);
+            $table->string('url_lampiran', 500)->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+
+            $table->foreign('dibuat_oleh')->references('id')->on('users')->onDelete('cascade');
+            $table->index('dibuat_oleh');
+            $table->index('published_at');
+            $table->index('is_semat');
+        });
+
+        // Pengumuman Dibaca (tracking)
+        Schema::create('pengumuman_dibaca', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->uuid('pengumuman_id');
+            $table->uuid('user_id');
+            $table->timestamp('dibaca_at')->useCurrent();
+
+            $table->foreign('pengumuman_id')->references('id')->on('pengumuman')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unique(['pengumuman_id', 'user_id']);
+        });
+
+        // ============================================================
+        // 6. PESAN
+        // ============================================================
+
+        // Percakapan
+        Schema::create('percakapan', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->uuid('user_id_1');
+            $table->uuid('user_id_2');
+            $table->enum('status', ['active', 'archived', 'blocked'])->default('active');
+            $table->timestamp('last_message_at')->nullable();
+            $table->timestamps();
+
+            $table->foreign('user_id_1')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id_2')->references('id')->on('users')->onDelete('cascade');
+            $table->index('user_id_1');
+            $table->index('user_id_2');
+            $table->index('status');
+        });
+
+        // Pesan
+        Schema::create('pesan', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->uuid('percakapan_id');
+            $table->uuid('pengirim_id');
+            $table->uuid('penerima_id');
+            $table->text('isi');
+            $table->enum('status_pesan', ['terkirim', 'diterima', 'dibaca', 'dihapus'])->default('terkirim');
+            $table->string('url_lampiran', 500)->nullable();
+            $table->string('tipe_lampiran', 50)->nullable();
+            $table->uuid('balas_ke_id')->nullable();
+            $table->boolean('is_dibaca')->default(false);
             $table->timestamp('read_at')->nullable();
             $table->timestamp('created_at')->useCurrent();
 
-            $table->foreign('conversation_id')->references('id')->on('conversations')->onDelete('cascade');
-            $table->foreign('sender_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('receiver_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('reply_to_id')->references('id')->on('messages')->onDelete('set null');
-            $table->index('conversation_id');
-            $table->index('sender_id');
-            $table->index('receiver_id');
-            $table->index('is_read');
+            $table->foreign('percakapan_id')->references('id')->on('percakapan')->onDelete('cascade');
+            $table->foreign('pengirim_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('penerima_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('balas_ke_id')->references('id')->on('pesan')->onDelete('set null');
+            $table->index('percakapan_id');
+            $table->index('pengirim_id');
+            $table->index('penerima_id');
+            $table->index('is_dibaca');
             $table->index('created_at');
         });
 
         // ============================================================
-        // 7. ANNOUNCEMENTS
+        // 7. LARAVEL DEFAULT TABLES
         // ============================================================
 
-        // Announcements
-        Schema::create('announcements', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('created_by');
-            $table->string('title');
-            $table->text('content');
-            $table->string('announcement_type', 50)->default('general');
-            $table->enum('target_role', ['superadmin', 'admin', 'verifikator', 'petugas_lapangan', 'warga'])->nullable();
-            $table->boolean('is_urgent')->default(false);
-            $table->boolean('is_pinned')->default(false);
-            $table->timestamp('publish_at')->useCurrent();
-            $table->timestamp('expire_at')->nullable();
-            $table->integer('view_count')->default(0);
-            $table->integer('read_count')->default(0);
-            $table->string('attachment_url', 500)->nullable();
-            $table->timestamps();
-            $table->softDeletes();
-
-            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
-            $table->index('created_by');
-            $table->index('publish_at');
-            $table->index('is_pinned');
+        // Sessions table
+        Schema::create('sessions', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->uuid('user_id')->nullable()->index();
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->longText('payload');
+            $table->integer('last_activity')->index();
         });
 
-        // Announcement reads
-        Schema::create('announcement_reads', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->uuid('announcement_id');
-            $table->uuid('user_id');
-            $table->timestamp('read_at')->useCurrent();
-
-            $table->foreign('announcement_id')->references('id')->on('announcements')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->unique(['announcement_id', 'user_id']);
+        // Password reset tokens
+        Schema::create('password_reset_tokens', function (Blueprint $table) {
+            $table->string('email')->primary();
+            $table->string('token');
+            $table->timestamp('created_at')->nullable();
         });
     }
 
@@ -434,41 +476,31 @@ return new class extends Migration
     public function down(): void
     {
         // Drop in reverse order to avoid foreign key constraints
-        Schema::dropIfExists('announcement_reads');
-        Schema::dropIfExists('announcements');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('sessions');
 
-        Schema::dropIfExists('messages');
-        Schema::dropIfExists('conversations');
+        Schema::dropIfExists('pesan');
+        Schema::dropIfExists('percakapan');
 
-        Schema::dropIfExists('user_badges');
-        Schema::dropIfExists('badges');
-        Schema::dropIfExists('point_transactions');
-        Schema::dropIfExists('user_points');
-        Schema::dropIfExists('point_rules');
+        Schema::dropIfExists('pengumuman_dibaca');
+        Schema::dropIfExists('pengumuman');
 
-        Schema::dropIfExists('notifications');
-        Schema::dropIfExists('notification_templates');
+        Schema::dropIfExists('notifikasi');
 
-        Schema::dropIfExists('document_history');
-        Schema::dropIfExists('document_approvals');
-        Schema::dropIfExists('document_attachments');
-        Schema::dropIfExists('documents');
-        Schema::dropIfExists('document_templates');
-        Schema::dropIfExists('document_types');
+        Schema::dropIfExists('riwayat_dokumen');
+        Schema::dropIfExists('persetujuan_dokumen');
+        Schema::dropIfExists('lampiran_dokumen');
+        Schema::dropIfExists('dokumen');
+        Schema::dropIfExists('template_dokumen');
+        Schema::dropIfExists('jenis_dokumen');
 
-        Schema::dropIfExists('ticket_ratings');
-        Schema::dropIfExists('ticket_supports');
-        Schema::dropIfExists('ticket_history');
-        Schema::dropIfExists('ticket_comments');
-        Schema::dropIfExists('ticket_attachments');
-        Schema::dropIfExists('tickets');
-        Schema::dropIfExists('ticket_categories');
+        Schema::dropIfExists('riwayat_pengaduan');
+        Schema::dropIfExists('lampiran_pengaduan');
+        Schema::dropIfExists('pengaduan');
+        Schema::dropIfExists('kategori_pengaduan');
 
-        Schema::dropIfExists('password_resets');
-        Schema::dropIfExists('refresh_tokens');
-        Schema::dropIfExists('user_preferences');
-        Schema::dropIfExists('user_roles');
-        Schema::dropIfExists('user_profiles');
+        Schema::dropIfExists('peran_pengguna');
+        Schema::dropIfExists('profil_pengguna');
         Schema::dropIfExists('users');
     }
 };

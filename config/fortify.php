@@ -47,7 +47,7 @@ return [
 
     'username' => 'email',
 
-    'email' => 'email',
+    'email' => 'email', // Bisa berupa email, NIK, atau phone
 
     /*
     |--------------------------------------------------------------------------
@@ -144,14 +144,15 @@ return [
     */
 
     'features' => [
+        // Features::authentication(), // Disable, kita pakai custom
         Features::registration(),
         Features::resetPasswords(),
         Features::emailVerification(),
-        Features::twoFactorAuthentication([
-            'confirm' => true,
-            'confirmPassword' => true,
-            // 'window' => 0
-        ]),
+        // Features::twoFactorAuthentication([
+        //     'confirm' => true,
+        //     'confirmPassword' => true,
+        //     // 'window' => 0
+        // ]),
     ],
 
 ];

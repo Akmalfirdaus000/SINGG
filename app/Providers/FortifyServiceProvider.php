@@ -4,8 +4,12 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Models\User;
+use App\Responses\LoginResponse;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -38,6 +42,43 @@ class FortifyServiceProvider extends ServiceProvider
      */
     private function configureActions(): void
     {
+        Fortify::authenticateUsing(function (Request $request) {
+            $loginField = $request->input('email');
+
+            Log::info('Login attempt', ['email' => $loginField]);
+
+            $user = User::where(function ($query) use ($loginField) {
+                $query->where('email', $loginField)
+                    ->orWhere('nik', $loginField)
+                    ->orWhere('phone', $loginField);
+            })->first();
+
+            if (!$user) {
+                Log::warning('User not found', ['email' => $loginField]);
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'email' => 'Email/NIK/No HP atau password salah.',
+                ]);
+            }
+
+            if (!Hash::check($request->input('password'), $user->password_hash)) {
+                Log::warning('Password mismatch', ['email' => $loginField, 'user_id' => $user->id]);
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'email' => 'Email/NIK/No HP atau password salah.',
+                ]);
+            }
+
+            if (!$user->is_active) {
+                Log::warning('User not active', ['email' => $loginField, 'user_id' => $user->id]);
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'email' => 'Akun Anda dinonaktifkan. Hubungi admin.',
+                ]);
+            }
+
+            Log::info('Login successful', ['email' => $loginField, 'user_id' => $user->id]);
+
+            return $user;
+        });
+
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::createUsersUsing(CreateNewUser::class);
     }
@@ -83,7 +124,8 @@ class FortifyServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('login', function (Request $request) {
-            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
+            $loginField = $request->input('email');
+            $throttleKey = Str::transliterate(Str::lower($loginField).'|'.$request->ip());
 
             return Limit::perMinute(5)->by($throttleKey);
         });

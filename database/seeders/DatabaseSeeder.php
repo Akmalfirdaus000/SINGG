@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,9 +11,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Run SINGG system seeder
         $this->call([
-            SinggSeeder::class,
+            UserSeeder::class,
+            KategoriPengaduanSeeder::class,
+            JenisDokumenSeeder::class,
+            PengumumanSeeder::class,
+            PengaduanSeeder::class,
+            DokumenSeeder::class,
         ]);
     }
 }

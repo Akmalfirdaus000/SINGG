@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('service_types', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('pengaduan', function (Blueprint $table) {
+            $table->integer('progres')->default(0)->after('status');
         });
     }
 
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('service_types');
+        Schema::table('pengaduan', function (Blueprint $table) {
+            $table->dropColumn('progres');
+        });
     }
 };
