@@ -44,6 +44,7 @@ interface DocumentDetailProps {
         };
         lampiran: any[];
         riwayat: any[];
+        url_dokumen_dihasilkan?: string;
     }
 }
 
@@ -58,6 +59,16 @@ export function LayananDetailPage({ document }: DocumentDetailProps) {
         post(admin.layanan.update(document.id).url, {
             onSuccess: () => setData('catatan', ''),
         });
+    };
+
+    const handleTerbitkan = () => {
+        if (window.confirm('Terbitkan surat resmi dan selesaikan permohonan ini?')) {
+            router.post(admin.layanan.terbitkan(document.id).url, {}, {
+                onSuccess: () => {
+                    // Success handling is managed by Inertia automatic page refresh
+                }
+            });
+        }
     };
 
     const handleDelete = () => {
@@ -92,6 +103,17 @@ export function LayananDetailPage({ document }: DocumentDetailProps) {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
+                    {['disetujui', 'selesai'].includes(document.status) && (
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="bg-emerald-50 text-emerald-600 border-emerald-200 hover:bg-emerald-600 hover:text-white transition-all font-bold"
+                            onClick={handleTerbitkan}
+                        >
+                            <Send className="h-4 w-4 mr-2" />
+                            Terbitkan Surat
+                        </Button>
+                    )}
                     <Button 
                         variant="ghost" 
                         size="sm" 
@@ -116,7 +138,7 @@ export function LayananDetailPage({ document }: DocumentDetailProps) {
                         </CardHeader>
                         <CardContent className="pt-6">
                             <dl className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                                {Object.entries(document.data_form).map(([key, value]) => (
+                                {Object.entries(document.data_form ?? {}).map(([key, value]) => (
                                     <div key={key} className="space-y-1">
                                         <dt className="text-xs uppercase font-bold text-slate-400 tracking-wider">
                                             {key.replace(/_/g, ' ')}
@@ -129,6 +151,30 @@ export function LayananDetailPage({ document }: DocumentDetailProps) {
                             </dl>
                         </CardContent>
                     </Card>
+
+                    {document.url_dokumen_dihasilkan && (
+                        <Card className="border-none shadow-sm ring-1 ring-slate-200 overflow-hidden">
+                            <CardHeader className="bg-emerald-600 text-white border-b border-emerald-500 p-4">
+                                <CardTitle className="text-base flex items-center gap-2">
+                                    <FileText className="h-5 w-5" />
+                                    Pratinjau Surat Resmi
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-0 bg-slate-100">
+                                <iframe 
+                                    src={document.url_dokumen_dihasilkan} 
+                                    className="w-full h-[600px] border-none"
+                                    title="Pratinjau Surat"
+                                />
+                                <div className="p-4 bg-white border-t border-slate-100 flex justify-between items-center text-xs text-slate-500">
+                                    <p>Tampilan pratinjau surat yang dihasilkan oleh sistem.</p>
+                                    <Button variant="outline" size="sm" asChild>
+                                        <a href={document.url_dokumen_dihasilkan} target="_blank">Buka di Tab Baru</a>
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
 
                     {document.lampiran && document.lampiran.length > 0 && (
                         <Card className="border-none shadow-sm ring-1 ring-slate-200">
@@ -170,7 +216,7 @@ export function LayananDetailPage({ document }: DocumentDetailProps) {
                         </CardHeader>
                         <CardContent className="pt-6">
                             <div className="space-y-6">
-                                {document.riwayat.map((log, idx) => (
+                                {(document.riwayat ?? []).map((log, idx) => (
                                     <div key={log.id} className="flex gap-4 relative">
                                         {idx !== document.riwayat.length - 1 && (
                                             <div className="absolute left-[11px] top-6 bottom-[-24px] w-px bg-slate-200" />

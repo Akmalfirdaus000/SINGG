@@ -8,6 +8,8 @@ use App\Models\JenisDokumen;
 use App\Models\RiwayatDokumen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Inertia\Inertia;
 
 class LayananController extends Controller
@@ -119,5 +121,41 @@ class LayananController extends Controller
         $document->delete();
 
         return back()->with('success', 'Permohonan berhasil dihapus.');
+    }
+
+    /**
+     * Terbitkan surat PDF untuk permohonan
+     */
+    public function terbitkanSurat($id)
+    {
+        $dokumen = Dokumen::with(['user.profil', 'jenisDokumen'])->findOrFail($id);
+
+        // Generate PDF
+        $pdf = Pdf::loadView('surat.pengantar', compact('dokumen'));
+        
+        // Define path
+        $fileName = 'surat_' . $dokumen->nomor_dokumen . '_' . time() . '.pdf';
+        $path = 'surat/' . $fileName;
+
+        // Save to storage
+        Storage::disk('public')->put($path, $pdf->output());
+
+        // Update document
+        $dokumen->update([
+            'url_dokumen_dihasilkan' => asset('storage/' . $path),
+            'generated_at' => now(),
+            'status' => 'selesai' // Secara otomatis selesaikan jika diterbitkan
+        ]);
+
+        // Catat di Riwayat jika status berubah
+        RiwayatDokumen::create([
+            'dokumen_id' => $dokumen->id,
+            'user_id' => Auth::id(),
+            'status_lama' => 'disetujui',
+            'status_baru' => 'selesai',
+            'catatan' => 'Surat resmi telah diterbitkan.',
+        ]);
+
+        return back()->with('success', 'Surat berhasil diterbitkan dan status diperbarui menjadi selesai.');
     }
 }

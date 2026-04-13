@@ -62,30 +62,30 @@ const pengaduanNavItems: NavItem[] = [
 const layananNavItems: NavItem[] = [
     {
         title: 'Ajukan Permohonan',
-        href: '#',
+        href: warga.layanan.index().url,
         icon: FileText,
     },
     {
         title: 'Lacak Permohonan',
-        href: '#',
+        href: warga.layanan.lacak().url,
         icon: ClipboardList,
     },
     {
         title: 'Riwayat Dokumen',
-        href: '#',
+        href: warga.layanan.riwayat().url,
         icon: History,
     },
 ];
 
 const pesanNavItems: NavItem[] = [
     {
-        title: 'Inbox',
-        href: '#',
+        title: 'Inbox & Diskusi',
+        href: warga.pesan.index().url,
         icon: MessageSquare,
     },
     {
         title: 'Hubungi Admin',
-        href: '#',
+        href: warga.pesan.start().url,
         icon: UserCircle,
     },
 ];

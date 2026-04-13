@@ -28,6 +28,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import warga from '@/routes/warga';
 import AppSidebarLayout from '@/layouts/app/app-sidebar-layout';
 
+import { LocationPicker } from '@/components/location-picker';
+
 interface Category {
     id: string;
     nama: string;
@@ -47,10 +49,21 @@ export default function PengaduanCreate({ categories }: Props) {
         kategori_id: '',
         deskripsi: '',
         alamat_lokasi: '',
+        latitude: -6.2088, // Default to Jakarta if not set
+        longitude: 106.8456,
         is_anonim: false,
         is_publik: true,
         lampiran: [] as File[],
     });
+
+    const handleLocationSelect = (lat: number, lng: number, address: string) => {
+        setData(prev => ({
+            ...prev,
+            latitude: lat,
+            longitude: lng,
+            alamat_lokasi: address
+        }));
+    };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files || []);
@@ -81,8 +94,6 @@ export default function PengaduanCreate({ categories }: Props) {
             forceFormData: true,
         });
     };
-
-
 
     return (
         <>
@@ -195,14 +206,9 @@ export default function PengaduanCreate({ categories }: Props) {
                                 </CardHeader>
                                 <CardContent className="p-4 space-y-4">
                                     <div className="space-y-2">
-                                        <Label htmlFor="lokasi" className="text-xs font-bold uppercase tracking-wider text-slate-500">Alamat Lengkap</Label>
-                                        <Textarea 
-                                            id="lokasi" 
-                                            placeholder="Dusun, RT/RW, atau landmark terdekat..." 
-                                            className="min-h-[80px] rounded-lg border-slate-200 text-sm"
-                                            value={data.alamat_lokasi}
-                                            onChange={e => setData('alamat_lokasi', e.target.value)}
-                                        />
+                                        <Label htmlFor="lokasi" className="text-xs font-bold uppercase tracking-wider text-slate-500">Pilih Lokasi di Peta</Label>
+                                        <LocationPicker onLocationSelect={handleLocationSelect} />
+                                        {errors.alamat_lokasi && <p className="text-xs text-red-500">{errors.alamat_lokasi}</p>}
                                     </div>
                                     <div className="p-3 bg-blue-50 rounded-lg border border-blue-100 flex gap-3">
                                         <div className="p-2 bg-white rounded-md text-blue-600 h-fit shadow-sm">
@@ -214,6 +220,7 @@ export default function PengaduanCreate({ categories }: Props) {
                                     </div>
                                 </CardContent>
                             </Card>
+
 
                             <Card className="border-none shadow-sm ring-1 ring-slate-200 bg-white">
                                 <CardHeader className="p-4 border-b border-slate-100">

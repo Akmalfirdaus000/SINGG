@@ -249,8 +249,10 @@ export default function PengaduanShow({ pengaduan }: Props) {
                                 <MessageCircle className="h-10 w-10 text-blue-400 opacity-50" />
                                 <h3 className="font-bold">Butuh Bantuan?</h3>
                                 <p className="text-sm text-blue-100">Jika Anda memiliki pertanyaan lebih lanjut mengenai laporan ini, silakan hubungi admin melalui pusat pesan.</p>
-                                <Button className="w-full bg-white text-blue-600 hover:bg-blue-50" variant="secondary">
-                                    Kirim Pesan
+                                <Button asChild className="w-full bg-white text-blue-600 hover:bg-blue-50" variant="secondary">
+                                    <Link href={warga.pesan.start({ type: 'pengaduan', id: pengaduan.id } as any).url}>
+                                        Kirim Pesan
+                                    </Link>
                                 </Button>
                             </CardContent>
                             <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-blue-500 rounded-full opacity-20"></div>

@@ -30,6 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('admin/layanan/{id}', [\App\Http\Controllers\Admin\LayananController::class, 'show'])->name('admin.layanan.show');
     Route::post('admin/layanan/{id}', [\App\Http\Controllers\Admin\LayananController::class, 'update'])->name('admin.layanan.update');
     Route::delete('admin/layanan/{id}', [\App\Http\Controllers\Admin\LayananController::class, 'destroy'])->name('admin.layanan.destroy');
+    Route::post('admin/layanan/{id}/terbitkan', [\App\Http\Controllers\Admin\LayananController::class, 'terbitkanSurat'])->name('admin.layanan.terbitkan');
 
     // Admin Katalog Layanan
     Route::get('admin/katalog-layanan', [\App\Http\Controllers\Admin\KatalogLayananController::class, 'index'])->name('admin.katalog.index');
@@ -62,6 +63,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('pengaduan/create', [\App\Http\Controllers\Warga\PengaduanController::class, 'create'])->name('warga.pengaduan.create');
     Route::post('pengaduan', [\App\Http\Controllers\Warga\PengaduanController::class, 'store'])->name('warga.pengaduan.store');
     Route::get('pengaduan/{id}', [\App\Http\Controllers\Warga\PengaduanController::class, 'show'])->name('warga.pengaduan.show');
+
+    // Warga Layanan Administrasi
+    Route::get('layanan', [\App\Http\Controllers\Warga\LayananController::class, 'index'])->name('warga.layanan.index');
+    Route::get('layanan/lacak', [\App\Http\Controllers\Warga\LayananController::class, 'lacak'])->name('warga.layanan.lacak');
+    Route::get('layanan/riwayat', [\App\Http\Controllers\Warga\LayananController::class, 'riwayat'])->name('warga.layanan.riwayat');
+    Route::get('layanan/buat/{jenis_id}', [\App\Http\Controllers\Warga\LayananController::class, 'create'])->name('warga.layanan.create');
+    Route::post('layanan', [\App\Http\Controllers\Warga\LayananController::class, 'store'])->name('warga.layanan.store');
+    Route::get('layanan/{id}', [\App\Http\Controllers\Warga\LayananController::class, 'show'])->name('warga.layanan.show');
+
+    // Warga Pusat Pesan
+    Route::get('pesan', [\App\Http\Controllers\Warga\PesanController::class, 'index'])->name('warga.pesan.index');
+    Route::get('pesan/start', [\App\Http\Controllers\Warga\PesanController::class, 'start'])->name('warga.pesan.start');
+    Route::get('pesan/{id}', [\App\Http\Controllers\Warga\PesanController::class, 'show'])->name('warga.pesan.show');
+    Route::post('pesan/{id}', [\App\Http\Controllers\Warga\PesanController::class, 'store'])->name('warga.pesan.store');
 });
 
 // Public Bantuan & FAQ

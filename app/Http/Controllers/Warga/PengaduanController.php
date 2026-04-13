@@ -59,39 +59,43 @@ class PengaduanController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'judul' => 'required|string|max:255',
-            'kategori_id' => 'required|exists:kategori_pengaduan,id',
-            'deskripsi' => 'required|string',
-            'alamat_lokasi' => 'nullable|string',
-            'is_anonim' => 'required|boolean',
-            'is_publik' => 'required|boolean',
-            'lampiran.*' => 'nullable|image|max:5120', // Max 5MB per image
-        ]);
-
-        $user = Auth::user();
-
-        try {
-            DB::beginTransaction();
-
-            // Generate Nomor Pengaduan
-            $datePart = now()->format('Ymd');
-            $countToday = Pengaduan::whereDate('created_at', now()->toDateString())->count() + 1;
-            $nomor = 'PGD-' . $datePart . '-' . str_pad($countToday, 4, '0', STR_PAD_LEFT) . '-' . strtoupper(Str::random(4));
-
-            // Create Pengaduan
-            $pengaduan = Pengaduan::create([
-                'nomor_pengaduan' => $nomor,
-                'user_id' => $user->id,
-                'kategori_id' => $request->kategori_id,
-                'judul' => $request->judul,
-                'deskripsi' => $request->deskripsi,
-                'status' => 'menunggu_verifikasi',
-                'prioritas' => 'sedang',
-                'alamat_lokasi' => $request->alamat_lokasi,
-                'is_anonim' => $request->is_anonim,
-                'is_publik' => $request->is_publik,
+            $request->validate([
+                'judul' => 'required|string|max:255',
+                'kategori_id' => 'required|exists:kategori_pengaduan,id',
+                'deskripsi' => 'required|string',
+                'alamat_lokasi' => 'nullable|string',
+                'latitude' => 'nullable|numeric',
+                'longitude' => 'nullable|numeric',
+                'is_anonim' => 'required|boolean',
+                'is_publik' => 'required|boolean',
+                'lampiran.*' => 'nullable|image|max:5120', // Max 5MB per image
             ]);
+
+            $user = Auth::user();
+
+            try {
+                DB::beginTransaction();
+
+                // Generate Nomor Pengaduan
+                $datePart = now()->format('Ymd');
+                $countToday = Pengaduan::whereDate('created_at', now()->toDateString())->count() + 1;
+                $nomor = 'PGD-' . $datePart . '-' . str_pad($countToday, 4, '0', STR_PAD_LEFT) . '-' . strtoupper(Str::random(4));
+
+                // Create Pengaduan
+                $pengaduan = Pengaduan::create([
+                    'nomor_pengaduan' => $nomor,
+                    'user_id' => $user->id,
+                    'kategori_id' => $request->kategori_id,
+                    'judul' => $request->judul,
+                    'deskripsi' => $request->deskripsi,
+                    'status' => 'menunggu_verifikasi',
+                    'prioritas' => 'sedang',
+                    'alamat_lokasi' => $request->alamat_lokasi,
+                    'latitude' => $request->latitude,
+                    'longitude' => $request->longitude,
+                    'is_anonim' => $request->is_anonim,
+                    'is_publik' => $request->is_publik,
+                ]);
 
             // Handle Lampiran
             if ($request->hasFile('lampiran')) {

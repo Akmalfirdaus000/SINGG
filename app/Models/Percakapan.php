@@ -18,6 +18,8 @@ class Percakapan extends Model
         'user_id_1',
         'user_id_2',
         'status',
+        'context_type',
+        'context_id',
         'last_message_at',
     ];
 
