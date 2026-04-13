@@ -42,6 +42,34 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('admin/antrean/next', [\App\Http\Controllers\Admin\AntreanController::class, 'next'])->name('admin.antrean.next');
     Route::post('admin/antrean/{id}', [\App\Http\Controllers\Admin\AntreanController::class, 'update'])->name('admin.antrean.update');
     Route::delete('admin/antrean/reset', [\App\Http\Controllers\Admin\AntreanController::class, 'reset'])->name('admin.antrean.reset');
+
+    // Admin Pusat Pesan
+    Route::get('admin/pesan', [\App\Http\Controllers\Admin\PesanController::class, 'index'])->name('admin.pesan.index');
+    Route::get('admin/pesan/{percakapan}', [\App\Http\Controllers\Admin\PesanController::class, 'show'])->name('admin.pesan.show');
+    Route::post('admin/pesan/{percakapan}', [\App\Http\Controllers\Admin\PesanController::class, 'store'])->name('admin.pesan.store');
+
+    // Admin Manajemen Warga
+    Route::resource('admin/warga', \App\Http\Controllers\Admin\WargaController::class)->names('admin.warga');
+
+    // Admin Bantuan & FAQ
+    Route::resource('admin/faq', \App\Http\Controllers\Admin\FaqController::class)->names('admin.faq');
+
+    // Admin Berita & Pengumuman
+    Route::resource('admin/pengumuman', \App\Http\Controllers\Admin\PengumumanController::class)->names('admin.pengumuman');
+
+    // Warga Pengaduan
+    Route::get('pengaduan', [\App\Http\Controllers\Warga\PengaduanController::class, 'index'])->name('warga.pengaduan.index');
+    Route::get('pengaduan/create', [\App\Http\Controllers\Warga\PengaduanController::class, 'create'])->name('warga.pengaduan.create');
+    Route::post('pengaduan', [\App\Http\Controllers\Warga\PengaduanController::class, 'store'])->name('warga.pengaduan.store');
+    Route::get('pengaduan/{id}', [\App\Http\Controllers\Warga\PengaduanController::class, 'show'])->name('warga.pengaduan.show');
 });
+
+// Public Bantuan & FAQ
+Route::get('/bantuan', function () {
+    $faqs = \App\Models\Faq::where('is_active', true)->orderBy('urutan')->get();
+    return Inertia\Inertia::render('bantuan/index', [
+        'faqs' => $faqs
+    ]);
+})->name('bantuan');
 
 require __DIR__.'/settings.php';

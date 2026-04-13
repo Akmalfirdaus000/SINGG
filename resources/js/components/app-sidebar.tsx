@@ -35,6 +35,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import admin from '@/routes/admin';
+import warga from '@/routes/warga';
 import { edit } from '@/routes/profile';
 import type { NavItem, Auth } from '@/types';
 
@@ -43,17 +44,17 @@ import type { NavItem, Auth } from '@/types';
 const pengaduanNavItems: NavItem[] = [
     {
         title: 'Buat Pengaduan Baru',
-        href: '#',
+        href: warga.pengaduan.create().url,
         icon: PlusCircle,
     },
     {
         title: 'Daftar Pengaduan',
-        href: '#',
+        href: warga.pengaduan.index().url,
         icon: List,
     },
     {
         title: 'Pengaduan Selesai',
-        href: '#',
+        href: warga.pengaduan.index({ query: { status: 'selesai' } }).url,
         icon: CheckCircle,
     },
 ];
@@ -92,7 +93,7 @@ const pesanNavItems: NavItem[] = [
 const footerNavItems: NavItem[] = [
     {
         title: 'Bantuan (FAQ)',
-        href: '#',
+        href: '/bantuan',
         icon: HelpCircle,
     },
 ];
@@ -139,20 +140,25 @@ const adminLayananNavItems: NavItem[] = [
 const adminKomunikasiNavItems: NavItem[] = [
     {
         title: 'Pusat Pesan (Chat)',
-        href: '#',
+        href: admin.pesan.index().url,
         icon: MessagesSquare,
     },
     {
         title: 'Berita & Pengumuman',
-        href: '#',
+        href: admin.pengumuman.index().url,
         icon: Megaphone,
+    },
+    {
+        title: 'Manajemen FAQ',
+        href: admin.faq.index().url,
+        icon: HelpCircle,
     },
 ];
 
 const adminKependudukanNavItems: NavItem[] = [
     {
         title: 'Data Warga (NIK)',
-        href: '#',
+        href: admin.warga.index().url,
         icon: Users,
     },
 ];
