@@ -118,11 +118,21 @@
     </div>
 
     <div class="signature-area">
-        <p>{{ now()->translatedFormat('d F Y') }}</p>
-        <p>Wali Nagari / Pejabat Berwenang,</p>
-        <div class="signature-space"></div>
-        <p><strong>( ________________________ )</strong></p>
-        <p>NIP/NIDN. ..........................</p>
+        <p>Nagari Contoh, {{ now()->translatedFormat('d F Y') }}</p>
+        <p>Wali Nagari,</p>
+        <div class="signature-space" style="border: 1px solid #000; padding: 10px; margin: 10px 0; background-color: #f9f9f9; width: 220px; position: relative;">
+            <p style="font-size: 8pt; color: #000; margin: 0; line-height: 1.2;">
+                TANDA TANGAN ELEKTRONIK<br>
+                <strong>DT. WALI NAGARI</strong><br>
+                <span style="font-size: 7pt;">Sistem Informasi Nagari (SINGG)<br>
+                ID: {{ substr($dokumen->id, 0, 8) }}</span>
+            </p>
+            <div style="position: absolute; right: 10px; top: 10px; opacity: 0.1;">
+                <!-- Simulated QR Code or Stamp -->
+                <div style="width: 40px; height: 40px; border: 2px solid #000;"></div>
+            </div>
+        </div>
+        <p><strong>{{ $dokumen->approvedBy->profil->nama_lengkap ?? 'Dt. Wali Nagari' }}</strong></p>
     </div>
 
     <div class="footer">

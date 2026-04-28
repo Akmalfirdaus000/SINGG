@@ -257,40 +257,47 @@ export function LayananDetailPage({ document }: DocumentDetailProps) {
                             <form onSubmit={handleSubmit} className="space-y-5">
                                 <div className="space-y-2">
                                     <Label>Status Baru</Label>
-                                    <Select value={data.status} onValueChange={(v) => setData('status', v)}>
-                                        <SelectTrigger className="bg-white border-slate-200">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="menunggu_verifikasi">Menunggu Verifikasi</SelectItem>
-                                            <SelectItem value="terverifikasi">Terverifikasi</SelectItem>
-                                            <SelectItem value="dalam_tinjauan">Dalam Tinjauan</SelectItem>
-                                            <SelectItem value="disetujui">Disetujui</SelectItem>
-                                            <SelectItem value="selesai">Selesai</SelectItem>
-                                            <SelectItem value="ditolak">Ditolak</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
+                                        <Select 
+                                            value={data.status} 
+                                            onValueChange={(v) => setData('status', v)}
+                                            disabled={['menunggu_ttd_wali_nagari', 'disetujui', 'selesai', 'ditolak'].includes(document.status)}
+                                        >
+                                            <SelectTrigger className="bg-white border-slate-200">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="menunggu_verifikasi">Menunggu Verifikasi</SelectItem>
+                                                <SelectItem value="terverifikasi">Terverifikasi</SelectItem>
+                                                <SelectItem value="dalam_tinjauan">Dalam Tinjauan</SelectItem>
+                                                <SelectItem value="menunggu_ttd_wali_nagari">Kirim ke Wali Nagari (TTD)</SelectItem>
+                                                <SelectItem value="ditolak">Tolak Permohonan</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
 
-                                <div className="space-y-2">
-                                    <Label>Catatan / Alasan</Label>
-                                    <Textarea 
-                                        placeholder="Tulis catatan verifikasi atau alasan penolakan..." 
-                                        className="min-h-[120px] resize-none bg-white border-slate-200"
-                                        value={data.catatan}
-                                        onChange={(e) => setData('catatan', e.target.value)}
-                                    />
-                                    {errors.catatan && <p className="text-xs text-red-500">{errors.catatan}</p>}
-                                </div>
+                                    <div className="space-y-2">
+                                        <Label>Catatan / Alasan</Label>
+                                        <Textarea 
+                                            placeholder={['menunggu_ttd_wali_nagari', 'disetujui', 'selesai'].includes(document.status) ? "Status sedang dikunci" : "Tulis catatan verifikasi atau alasan penolakan..."}
+                                            className="min-h-[120px] resize-none bg-white border-slate-200"
+                                            value={data.catatan}
+                                            onChange={(e) => setData('catatan', e.target.value)}
+                                            disabled={['menunggu_ttd_wali_nagari', 'disetujui', 'selesai', 'ditolak'].includes(document.status)}
+                                        />
+                                        {errors.catatan && <p className="text-xs text-red-500">{errors.catatan}</p>}
+                                    </div>
 
-                                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={processing}>
-                                    {processing ? "Memproses..." : (
-                                        <>
-                                            <Send className="h-3.5 w-3.5 mr-2" />
-                                            Update Permohonan
-                                        </>
-                                    )}
-                                </Button>
+                                    <Button 
+                                        className="w-full bg-blue-600 hover:bg-blue-700 text-white" 
+                                        disabled={processing || ['menunggu_ttd_wali_nagari', 'disetujui', 'selesai', 'ditolak'].includes(document.status)}
+                                    >
+                                        {processing ? "Memproses..." : (
+                                            <>
+                                                <Send className="h-3.5 w-3.5 mr-2" />
+                                                Update Permohonan
+                                            </>
+                                        )}
+                                    </Button>
                             </form>
                         </CardContent>
                     </Card>

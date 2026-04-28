@@ -37,6 +37,10 @@ const statusMap: any = {
     'menunggu_verifikasi': { label: 'Menunggu Verifikasi', color: 'bg-amber-100 text-amber-700 pill-amber' },
     'terverifikasi': { label: 'Terverifikasi', color: 'bg-blue-100 text-blue-700 pill-blue' },
     'dalam_tinjauan': { label: 'Dalam Tinjauan', color: 'bg-indigo-100 text-indigo-700 pill-indigo' },
+    'menunggu_ttd_wali_nagari': { label: 'Proses TTD Wali Nagari', color: 'bg-orange-100 text-orange-700 pill-orange' },
+    'disetujui': { label: 'Siap Diterbitkan', color: 'bg-emerald-100 text-emerald-700 pill-emerald' },
+    'selesai': { label: 'Selesai', color: 'bg-green-100 text-green-700 pill-green' },
+    'ditolak': { label: 'Ditolak', color: 'bg-red-100 text-red-700 pill-red' },
 };
 
 export default function LayananStatus({ documents }: Props) {

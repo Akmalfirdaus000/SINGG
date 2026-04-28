@@ -25,6 +25,7 @@ interface DashboardFeatureProps {
     stats: {
         activeComplaints: number;
         processingDocuments: number;
+        readyToGenerate: number;
         extraCount: number;
         rating: {
             average: number;
@@ -49,7 +50,7 @@ export default function DashboardFeature({ stats, latest, announcements, unread 
     return (
         <div className="flex flex-col gap-8">
             {/* Global Stats (Admin Oversight) */}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
                 <Card className="shadow-sm border-l-4 border-l-blue-500">
                     <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-2">
                         <CardDescription className="text-xs font-semibold uppercase italic">Total Pengaduan Nagari</CardDescription>
@@ -66,6 +67,21 @@ export default function DashboardFeature({ stats, latest, announcements, unread 
                     </CardHeader>
                     <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
                         <p className="text-xs text-gray-500">Berkas administrasi dalam antrean</p>
+                    </CardContent>
+                </Card>
+                <Card className="relative shadow-md border-l-4 border-l-purple-600 bg-purple-50/30 overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <ShieldCheck className="h-20 w-20 text-purple-700" />
+                    </div>
+                    <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-2">
+                        <CardDescription className="text-xs font-bold uppercase text-purple-700">Siap Terbit (Sudah TTD)</CardDescription>
+                        <CardTitle className="text-2xl font-black sm:text-3xl text-purple-900">{stats.readyToGenerate}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+                        <p className="text-xs text-purple-600 font-medium mb-3">Surat sudah ditandatangani Wali Nagari</p>
+                        <Button size="sm" className="bg-purple-600 hover:bg-purple-700 w-full text-[10px] h-8 font-bold" asChild>
+                            <Link href="/admin/layanan?status=disetujui">Generate Surat Sekarang</Link>
+                        </Button>
                     </CardContent>
                 </Card>
                 <Card className="shadow-sm border-l-4 border-l-emerald-500">

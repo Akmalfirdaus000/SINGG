@@ -77,6 +77,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('pesan/start', [\App\Http\Controllers\Warga\PesanController::class, 'start'])->name('warga.pesan.start');
     Route::get('pesan/{id}', [\App\Http\Controllers\Warga\PesanController::class, 'show'])->name('warga.pesan.show');
     Route::post('pesan/{id}', [\App\Http\Controllers\Warga\PesanController::class, 'store'])->name('warga.pesan.store');
+
+    // Wali Nagari Routes
+    Route::middleware(['role.walinagari'])->prefix('wali-nagari')->group(function () {
+        Route::get('dashboard', [\App\Http\Controllers\WaliNagari\WaliNagariController::class, 'dashboard'])->name('walinagari.dashboard');
+        Route::get('warga', [\App\Http\Controllers\WaliNagari\WaliNagariController::class, 'warga'])->name('walinagari.warga');
+        Route::get('statistik', [\App\Http\Controllers\WaliNagari\WaliNagariController::class, 'statistik'])->name('walinagari.statistik');
+        Route::get('layanan', [\App\Http\Controllers\WaliNagari\WaliNagariController::class, 'layanan'])->name('walinagari.layanan');
+        Route::get('layanan/{id}', [\App\Http\Controllers\WaliNagari\WaliNagariController::class, 'detailLayanan'])->name('walinagari.layanan.show');
+        Route::post('layanan/{id}/approve', [\App\Http\Controllers\WaliNagari\WaliNagariController::class, 'approveLayanan'])->name('walinagari.layanan.approve');
+        Route::post('layanan/{id}/reject', [\App\Http\Controllers\WaliNagari\WaliNagariController::class, 'rejectLayanan'])->name('walinagari.layanan.reject');
+        Route::get('layanan/{id}/preview', [\App\Http\Controllers\WaliNagari\WaliNagariController::class, 'previewSurat'])->name('walinagari.layanan.preview');
+        Route::get('pengaduan', [\App\Http\Controllers\WaliNagari\WaliNagariController::class, 'pengaduan'])->name('walinagari.pengaduan');
+        Route::get('pengaduan/{id}', [\App\Http\Controllers\WaliNagari\WaliNagariController::class, 'detailPengaduan'])->name('walinagari.pengaduan.show');
+        Route::get('profil-nagari', [\App\Http\Controllers\WaliNagari\WaliNagariController::class, 'profilNagari'])->name('walinagari.profil-nagari');
+    });
 });
 
 // Public Bantuan & FAQ

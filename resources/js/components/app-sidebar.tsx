@@ -171,10 +171,50 @@ const adminFeedbackNavItems: NavItem[] = [
     },
 ];
 
+const waliNagariNavItems: NavItem[] = [
+    {
+        title: 'Dashboard Monitor',
+        href: '/wali-nagari/dashboard',
+        icon: LayoutGrid,
+    },
+    {
+        title: 'Data Masyarakat',
+        href: '/wali-nagari/warga',
+        icon: Users,
+    },
+    {
+        title: 'Layanan Administrasi',
+        href: '/wali-nagari/layanan',
+        icon: FileText,
+    },
+    {
+        title: 'Pengaduan Masyarakat',
+        href: '/wali-nagari/pengaduan',
+        icon: MessageSquare,
+    },
+    {
+        title: 'Statistik & Laporan',
+        href: '/wali-nagari/statistik',
+        icon: BarChart3,
+    },
+    {
+        title: 'Profil Nagari',
+        href: '/wali-nagari/profil-nagari',
+        icon: Activity,
+    },
+];
+
 export function AppSidebar() {
     const { auth } = usePage().props as unknown as { auth: Auth };
     const user = auth.user;
     const isAdmin = user.peran?.some((p) => p.peran === 'admin');
+    const isWaliNagari = user.peran?.some((p) => p.peran === 'wali_nagari');
+
+    const getBaseDashboardHref = () => {
+        if (isAdmin) return admin.dashboard().url;
+        if (isWaliNagari) return '/wali-nagari/dashboard';
+        return dashboard().url;
+    };
 
     return (
         <Sidebar collapsible="icon" variant="inset">
@@ -182,7 +222,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={isAdmin ? admin.dashboard().url : dashboard().url} prefetch>
+                            <Link href={getBaseDashboardHref()} prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>
@@ -194,12 +234,12 @@ export function AppSidebar() {
                 <NavMain items={[
                     {
                         title: 'Dashboard',
-                        href: isAdmin ? admin.dashboard().url : dashboard().url,
+                        href: getBaseDashboardHref(),
                         icon: LayoutGrid,
                     },
                 ]} />
 
-                {isAdmin ? (
+                {isAdmin && (
                     <>
                         <NavMain title="Inti & Statistik" items={adminIntiNavItems} />
                         <NavMain title="Moderasi Pengaduan" items={adminModerasiNavItems} />
@@ -208,7 +248,13 @@ export function AppSidebar() {
                         <NavMain title="Kependudukan" items={adminKependudukanNavItems} />
                         <NavMain title="Ulasan & Feedback" items={adminFeedbackNavItems} />
                     </>
-                ) : (
+                )}
+
+                {isWaliNagari && (
+                    <NavMain title="Menu Wali Nagari" items={waliNagariNavItems} />
+                )}
+
+                {!isAdmin && !isWaliNagari && (
                     <>
                         <NavMain title="Pengaduan" items={pengaduanNavItems} />
                         <NavMain title="Layanan Administrasi" items={layananNavItems} />

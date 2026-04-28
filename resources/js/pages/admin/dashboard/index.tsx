@@ -10,6 +10,7 @@ interface DashboardProps {
     stats: {
         activeComplaints: number;
         processingDocuments: number;
+        readyToGenerate: number;
         extraCount: number;
         rating: {
             average: number;

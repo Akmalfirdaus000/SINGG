@@ -213,6 +213,14 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Check if user is wali nagari.
+     */
+    public function isWaliNagari(): bool
+    {
+        return $this->hasRole('wali_nagari');
+    }
+
+    /**
      * Get the name of the unique identifier for the user.
      */
     public function getAuthIdentifierName()

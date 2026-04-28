@@ -32,6 +32,8 @@ class DashboardController extends Controller
                 $query->where('peran', 'warga');
             })->count();
 
+            $readyToGenerateCount = Dokumen::where('status', 'disetujui')->count();
+
             $averageRating = Pengaduan::whereNotNull('rating')->avg('rating') ?: 0;
             $ratingCount = Pengaduan::whereNotNull('rating')->count();
 
@@ -97,6 +99,7 @@ class DashboardController extends Controller
             'stats' => [
                 'activeComplaints' => $activeComplaintsCount,
                 'processingDocuments' => $processingDocumentsCount,
+                'readyToGenerate' => $isAdmin ? $readyToGenerateCount : 0,
                 'extraCount' => $isAdmin ? $totalCitizensCount : 0, // Total citizens for admin vs 0 for warga
                 'rating' => [
                     'average' => round($averageRating, 1),

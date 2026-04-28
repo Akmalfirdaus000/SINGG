@@ -15,8 +15,20 @@ trait ProfileValidationRules
     protected function profileRules(?int $userId = null): array
     {
         return [
-            'name' => $this->nameRules(),
             'email' => $this->emailRules($userId),
+            'nik' => ['required', 'string', 'max:16', Rule::unique(User::class)],
+            'phone' => ['required', 'string', 'max:20'],
+            'nama_lengkap' => ['required', 'string', 'max:255'],
+            'tempat_lahir' => ['nullable', 'string', 'max:100'],
+            'tanggal_lahir' => ['nullable', 'date'],
+            'jenis_kelamin' => ['nullable', 'in:L,P'],
+            'pekerjaan' => ['nullable', 'string', 'max:100'],
+            'alamat' => ['nullable', 'string'],
+            'provinsi' => ['nullable', 'string', 'max:100'],
+            'kota' => ['nullable', 'string', 'max:100'],
+            'kecamatan' => ['nullable', 'string', 'max:100'],
+            'desa' => ['nullable', 'string', 'max:100'],
+            'kode_pos' => ['nullable', 'string', 'max:10'],
         ];
     }
 

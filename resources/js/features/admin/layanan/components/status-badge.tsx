@@ -18,6 +18,10 @@ export function StatusBadge({ status }: { status: string }) {
             label: 'Dalam Tinjauan',
             className: 'bg-indigo-50 text-indigo-700 border-indigo-200',
         },
+        menunggu_ttd_wali_nagari: {
+            label: 'Menunggu TTD Wali Nagari',
+            className: 'bg-orange-50 text-orange-700 border-orange-200',
+        },
         disetujui: {
             label: 'Disetujui',
             className: 'bg-emerald-50 text-emerald-700 border-emerald-200',

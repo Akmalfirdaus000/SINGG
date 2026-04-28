@@ -16,7 +16,7 @@ export type User = {
         url_foto_profil?: string;
     };
     peran?: Array<{
-        peran: 'admin' | 'warga';
+        peran: 'admin' | 'warga' | 'wali_nagari';
         is_active: boolean;
     }>;
     created_at: string;

@@ -71,6 +71,11 @@ class LayananController extends Controller
     {
         $document = Dokumen::findOrFail($id);
         
+        // Proteksi: Jika sedang menunggu TTD Wali Nagari, Admin tidak bisa merubah status
+        if ($document->status === 'menunggu_ttd_wali_nagari') {
+            return back()->with('error', 'Permohonan sedang menunggu tanda tangan Wali Nagari. Status dikunci.');
+        }
+
         $request->validate([
             'status' => 'required|string',
             'catatan' => 'required|string',
@@ -78,6 +83,12 @@ class LayananController extends Controller
 
         $statusLama = $document->status;
         $statusBaru = $request->status;
+
+        // Proteksi Alur: Admin tidak boleh loncat langsung ke Disetujui/Selesai
+        $disallowedStatuses = ['disetujui', 'selesai'];
+        if (in_array($statusBaru, $disallowedStatuses)) {
+            return back()->with('error', 'Anda tidak memiliki otoritas untuk memberikan persetujuan akhir atau menyelesaikan permohonan secara manual. Harus melalui persetujuan Wali Nagari.');
+        }
 
         $updateData = [
             'status' => $statusBaru,
@@ -87,15 +98,12 @@ class LayananController extends Controller
         if ($statusBaru === 'terverifikasi') {
             $updateData['verified_by'] = Auth::id();
             $updateData['verified_at'] = now();
-        } elseif ($statusBaru === 'disetujui') {
-            $updateData['approved_by'] = Auth::id();
-            $updateData['approved_at'] = now();
         } elseif ($statusBaru === 'ditolak') {
             $updateData['rejected_by'] = Auth::id();
             $updateData['rejected_at'] = now();
             $updateData['alasan_penolakan'] = $request->catatan;
-        } elseif ($statusBaru === 'selesai') {
-            $updateData['completed_at'] = now();
+        } elseif ($statusBaru === 'menunggu_ttd_wali_nagari') {
+            // No specific fields for this status yet
         }
 
         $document->update($updateData);
@@ -129,6 +137,11 @@ class LayananController extends Controller
     public function terbitkanSurat($id)
     {
         $dokumen = Dokumen::with(['user.profil', 'jenisDokumen'])->findOrFail($id);
+
+        // Validasi: Harus disetujui Wali Nagari terlebih dahulu
+        if ($dokumen->status !== 'disetujui') {
+            return back()->with('error', 'Surat belum disetujui/ditandatangani oleh Wali Nagari.');
+        }
 
         // Generate PDF
         $pdf = Pdf::loadView('surat.pengantar', compact('dokumen'));

@@ -110,6 +110,7 @@ export function LayananListPage({ documents, jenisDokumen, filters }: ListPagePr
                                     <SelectItem value="menunggu_verifikasi">Menunggu Verifikasi</SelectItem>
                                     <SelectItem value="terverifikasi">Terverifikasi</SelectItem>
                                     <SelectItem value="dalam_tinjauan">Dalam Tinjauan</SelectItem>
+                                    <SelectItem value="menunggu_ttd_wali_nagari">Menunggu TTD Wali Nagari</SelectItem>
                                     <SelectItem value="disetujui">Disetujui</SelectItem>
                                     <SelectItem value="selesai">Selesai</SelectItem>
                                     <SelectItem value="ditolak">Ditolak</SelectItem>
